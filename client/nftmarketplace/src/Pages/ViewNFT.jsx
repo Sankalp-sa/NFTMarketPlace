@@ -131,8 +131,8 @@ export default function ViewNFT() {
             <div className="row">
               {nftItems?.map((item, index) => {
                 return (
-                  <>
-                    <div className="card col-md-3 mx-4" style={{ width: '18rem' }}>
+                  <div className='card col-md-3 mx-4' key={index}>
+                    <div className="" style={{ width: '18rem' }}>
                       <img src={item.tokenURI} className="card-img-top" alt="..." />
                       <div className="card-body">
                         <h5 className="card-title">{item?.name}</h5>
@@ -145,7 +145,7 @@ export default function ViewNFT() {
                         </button>
                       </div>
                     </div>
-                  </>
+                  </div>
                 )
               })}
             </div>

@@ -1,9 +1,15 @@
 import React from 'react'
 
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import ConnectButton from './ConnectButton'
 
+import { useNavigate } from 'react-router-dom'
+
 export default function Navbar() {
+
+    
+    const navigate = useNavigate()
+
     return (
         <div>
             <nav className="navbar navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark">
@@ -15,17 +21,20 @@ export default function Navbar() {
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <Link className="nav-link active" aria-current="page" to="/">Home</Link>
+                                <NavLink className="nav-link" aria-current="page" to="/">Home</NavLink>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/createNFT">Create NFT</Link>
+                                <NavLink className="nav-link" to="/createNFT">Create NFT</NavLink>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/viewNFTs">View NFTs</Link>
-                            </li>   
+                                <NavLink className="nav-link" to="/viewNFTs">View NFTs</NavLink>
+                            </li>  
                             <li className="nav-item">
-                                <Link className="nav-link" to="/myNFTs">My NFTs</Link>
-                            </li>
+                                <NavLink className='nav-link' to="/myNFT">My NFTs</NavLink>
+                            </li>  
+                            <li className="nav-item">
+                                <NavLink className='nav-link' to="/test">Test</NavLink>
+                            </li>  
                         </ul>
                         <ConnectButton />
                     </div>

@@ -6,14 +6,14 @@ import CreateNFT from './Pages/CreateNFT';
 
 import ViewNFT from './Pages/ViewNFT';
 import MyNFT from './Pages/MyNFT';
-
+// import MyNFT from './Pages/MyNFT';
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/createNFT" element={<CreateNFT />} />
       <Route path="/viewNFTs" element={<ViewNFT />} />
-      <Route path='/myNFTs' element={<MyNFT />} />
+      <Route path='/myNFT' element={<MyNFT />} />
     </Routes>
   )
 }

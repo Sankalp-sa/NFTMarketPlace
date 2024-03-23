@@ -163,22 +163,16 @@ contract NFTMarketPlace is ERC721URIStorage {
 
     /* Returns only items that a user has purchased */
     function fetchMyNFTs() public view returns (MarketItem[] memory) {
+        
         uint256 totalItemCount = _tokenIds;
         uint256 itemCount = 0;
         uint256 currentIndex = 0;
 
-        console.log(msg.sender);
-
         for (uint256 i = 0; i < totalItemCount; i++) {
-
-            console.log(idToMarketItem[i + 1].owner);
-
             if (idToMarketItem[i + 1].owner == msg.sender) {
                 itemCount += 1;
             }
         }
-
-        console.log(itemCount);
 
         MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
@@ -189,10 +183,8 @@ contract NFTMarketPlace is ERC721URIStorage {
                 currentIndex += 1;
             }
         }
-
-        console.log(items);
-
         return items;
+
     }
 
     /* Returns only items a user has listed */

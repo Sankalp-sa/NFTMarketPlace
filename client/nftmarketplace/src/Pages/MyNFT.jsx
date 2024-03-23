@@ -7,7 +7,7 @@ import { useNFTMarketPlace } from '../Context/NFTMarketPlaceContext'
 import Navbar from '../Components/Navbar'
 import { ethers } from 'ethers'
 
-export default function MyNFT() {
+export default function MyNFT () {
 
     const { address } =  useNFTMarketPlace()  
 
@@ -28,8 +28,8 @@ export default function MyNFT() {
             })
 
             console.log(data)
-            
-            setMyNFTs(data)
+
+            fetchTokenURIs(data)
 
         }
         catch (error) {
@@ -39,18 +39,21 @@ export default function MyNFT() {
 
     }
 
-    const fetchTokenURIs = async () => {
-        const updatedItems = await Promise.all(myNFTs.map(async (item) => {
+    const fetchTokenURIs = async (data) => {
 
-          const price = ethers.formatUnits(item.price.toString(), 'ether')
-          const seller = item.seller
-          const owner = item.owner
+        console.log("Hello")
+
+        const updatedItems = await Promise.all(data.map(async (item) => {
+            
+          const price = ethers.formatEther(item?.price.toString())
+          const seller = item?.seller
+          const owner = item?.owner
 
           const tokenURI = await readContract(config, {
             abi: NFTMarketPlaceABI,
             address: NFTMarketPlaceAddress,
             functionName: 'tokenURI',
-            args: [item.tokenId],
+            args: [item?.tokenId],
           })
 
           // trim ipfs hash from the tokenURI
@@ -100,10 +103,6 @@ export default function MyNFT() {
         getMyNFT();
     }, [])
 
-    useEffect(() => {
-        fetchTokenURIs()
-    }, [myNFTs])
-
     return (
         <>
             <Navbar />
@@ -111,15 +110,15 @@ export default function MyNFT() {
                 return (
                   <>
                     <div className="card col-md-3 mx-4" style={{ width: '18rem' }}>
-                      <img src={item.tokenURI} className="card-img-top" alt="..." />
+                      <img src={item?.tokenURI} className="card-img-top" alt="..." />
                       <div className="card-body">
                         <h5 className="card-title">{item?.name}</h5>
                         <p className="card-text">{item?.description}</p>
                         <p className="card-text">{item?.price} ETH</p>
                         <p className="card-text">{item?.owner}</p>
                         {/* Button trigger modal */}
-                        <button type="button" className="btn btn-dark" onClick={() => handleBuyNFT(item?.tokenId, item?.price)}>
-                          Buy NFT
+                        <button type="button" className="btn btn-dark">
+                          Resale NFT
                         </button>
                       </div>
                     </div>
