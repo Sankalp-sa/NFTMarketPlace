@@ -6,7 +6,7 @@ import { useWriteContract, useReadContract, useWaitForTransactionReceipt } from 
 import { readContract } from '@wagmi/core'
 
 import { ethers } from 'ethers'
-import config from '../../config'
+import {config} from '../../config'
 
 import axios from 'axios'
 

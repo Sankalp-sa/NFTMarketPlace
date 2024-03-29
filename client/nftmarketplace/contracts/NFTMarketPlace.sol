@@ -97,6 +97,10 @@ contract NFTMarketPlace is ERC721URIStorage {
 
     /* allows someone to resell a token they have purchased */
     function resellToken(uint256 tokenId, uint256 price) public payable {
+
+        console.log(tokenId);
+        console.log(price);
+
         require(
             idToMarketItem[tokenId].owner == msg.sender,
             "Only item owner can perform this operation"

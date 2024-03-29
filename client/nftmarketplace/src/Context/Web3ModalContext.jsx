@@ -2,8 +2,9 @@ import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 
 import { WagmiProvider } from 'wagmi'
-import { sepolia } from 'wagmi/chains'
+import { localhost } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { config } from '../../config'
 
 // 0. Setup queryClient
 const queryClient = new QueryClient()
@@ -18,12 +19,12 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 
-const chains = [sepolia]
-const config = defaultWagmiConfig({
-  chains,
-  projectId,
-  metadata
-})
+// const chains = [localhost]
+// const config = defaultWagmiConfig({
+//   chains,
+//   projectId,
+//   metadata
+// })
 
 // 3. Create modal
 createWeb3Modal({

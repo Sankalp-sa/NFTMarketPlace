@@ -132,9 +132,7 @@ export default function CreateNFT() {
                     abi: NFTMarketPlaceABI,
                     functionName: 'reSellToken',
                     args: [url, price],
-                    overrides: {
-                        value: listingPrice.toString()
-                    }
+                    value: listingPrice.toString()
                 })
 
             }
