@@ -6,11 +6,23 @@
 // global scope, and execute the script.
 import hre from "hardhat";
 
+import pkg from 'hardhat';
+const { ethers } = pkg;
+
 const NFTMarketPlace = await ethers.deployContract("NFTMarketPlace");
 
 await NFTMarketPlace.waitForDeployment();
 
+const AuctionContract = await ethers.deployContract("AuctionContract",[NFTMarketPlace.target]);
+
+await AuctionContract.waitForDeployment();
+
 console.log(
-  "smart contract deployed to:",
+  "NFTMarketPlace smart contract deployed to:",
   NFTMarketPlace.target
+);
+
+console.log(
+  "Auction smart contract deployed to:",
+  AuctionContract.target
 );

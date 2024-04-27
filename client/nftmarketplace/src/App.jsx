@@ -6,6 +6,7 @@ import CreateNFT from './Pages/CreateNFT';
 
 import ViewNFT from './Pages/ViewNFT';
 import MyNFT from './Pages/MyNFT';
+import ViewAuctions from './Pages/ViewAuctions';
 // import MyNFT from './Pages/MyNFT';
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/createNFT" element={<CreateNFT />} />
       <Route path="/viewNFTs" element={<ViewNFT />} />
       <Route path='/myNFT' element={<MyNFT />} />
+      <Route path="/auctions" element={<ViewAuctions />} />
     </Routes>
   )
 }
