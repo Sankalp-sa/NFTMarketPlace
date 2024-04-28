@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useNFTMarketPlace } from '../Context/NFTMarketPlaceContext';
 import { NFTMarketPlaceABI, NFTMarketPlaceAddress } from '../Context/constants';
 import { ethers } from 'ethers';
-import { useWriteContract, useReadContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useWriteContract, useReadContract, useWaitForTransactionReceipt } from 'wagmi';
 import Navbar from '../Components/Navbar';
 
 export default function CreateNFT() {
@@ -69,7 +69,6 @@ export default function CreateNFT() {
         formData.append("pinataOptions", options);
 
         createNFT(formData);
-
     }
 
     // create nft
@@ -92,7 +91,7 @@ export default function CreateNFT() {
             const cid = resData.IpfsHash;
 
             const url = `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${cid}`
-            console.log(url)
+            console.log(url);
 
             await createSale(url, nftPrice.toString())
 

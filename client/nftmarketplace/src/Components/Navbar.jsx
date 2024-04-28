@@ -33,8 +33,11 @@ export default function Navbar() {
                                 <NavLink className='nav-link' to="/myNFT">My NFTs</NavLink>
                             </li>  
                             <li className="nav-item">
-                                <NavLink className='nav-link' to="/test">Test</NavLink>
+                                <NavLink className='nav-link' to="/addCollections">Create Collections</NavLink>
                             </li>  
+                            <li className="nav-item">
+                                <NavLink className='nav-link' to="/addNFTsinCollections">Add NFTs in Collections</NavLink>
+                            </li>
                         </ul>
                         <ConnectButton />
                     </div>

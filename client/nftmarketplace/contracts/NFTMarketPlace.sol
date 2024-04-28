@@ -23,6 +23,19 @@ contract NFTMarketPlace is ERC721URIStorage {
         bool sold;
     }
 
+    //create mapping to store the collection, with other more details like nftIds array, name, and other values
+    mapping(uint256 => Collection) public collections;
+
+    uint256 private totCollections;
+
+    //structure of collection of all NFTs
+    struct Collection {
+        string name;
+        string description;
+        address creator;
+        uint256[] nftIds;
+    }
+
     event MarketItemCreated(
         uint256 indexed tokenId,
         address seller,
@@ -97,10 +110,6 @@ contract NFTMarketPlace is ERC721URIStorage {
 
     /* allows someone to resell a token they have purchased */
     function resellToken(uint256 tokenId, uint256 price) public payable {
-
-        console.log(tokenId);
-        console.log(price);
-
         require(
             idToMarketItem[tokenId].owner == msg.sender,
             "Only item owner can perform this operation"
@@ -214,4 +223,41 @@ contract NFTMarketPlace is ERC721URIStorage {
         }
         return items;
     }
+
+
+
+    function createCollection(string memory name, string memory description) public {
+        uint256 collectionId = totCollections+1;
+        Collection memory newCollection = Collection(name, description, msg.sender, new uint256[](0));
+        collections[collectionId] = newCollection;
+        emit CollectionCreated(collectionId, name, description, msg.sender);
+        totCollections++;
+    }
+
+    function addToCollection(uint256 collectionId, uint256 nftId) public {
+        require(collectionId <= totCollections, "Collection does not exist");
+        collections[collectionId].nftIds.push(nftId);
+        emit NFTAddedToCollection(collectionId, nftId);
+    }
+
+    function getCollection(uint256 collectionId) public view returns (Collection memory) {
+        require(collectionId <= totCollections, "Collection does not exist");
+        return collections[collectionId];
+    }
+
+    function getNFTsInCollection(uint256 collectionId) public view returns (uint256[] memory) {
+        require(collectionId <= totCollections, "Collection does not exist");
+        return collections[collectionId].nftIds;
+    }
+
+    function getAllCollections() public view returns (Collection[] memory) {
+        Collection[] memory allCollections = new Collection[](totCollections);
+        for (uint256 i = 1; i <= totCollections; i++) {
+            allCollections[i - 1] = collections[i];
+        }
+        return allCollections;
+    }
+
+    event CollectionCreated(uint256 indexed collectionId, string name, string description, address creator);
+    event NFTAddedToCollection(uint256 indexed collectionId, uint256 nftId);
 }
