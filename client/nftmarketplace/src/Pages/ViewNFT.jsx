@@ -114,6 +114,7 @@ export default function ViewNFT() {
 
       try {
         fetchTokenURIs()
+        // getTraits()
       } catch (e) {
         console.log(e)
       }
@@ -139,6 +140,7 @@ export default function ViewNFT() {
                         <p className="card-text">{item?.description}</p>
                         <p className="card-text">{item?.price} ETH</p>
                         <p className="card-text">{item?.seller}</p>
+                        <p className='card-text'>Token id {item?.tokenId.toString()}</p>
                         {/* Button trigger modal */}
                         <button type="button" className="btn btn-dark" onClick={() => handleBuyNFT(item?.tokenId, item?.price)}>
                           Buy NFT

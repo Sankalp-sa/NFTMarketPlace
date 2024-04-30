@@ -9,6 +9,10 @@ module.exports = {
         mnemonic: process.env.VITE_SEED_PHRASE,
       },
       chainId: 1337,
+      mining: {
+        auto: true,
+        interval: 2000
+      }
     },
   },
 };
