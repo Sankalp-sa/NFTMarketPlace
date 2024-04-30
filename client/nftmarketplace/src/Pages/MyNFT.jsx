@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from 'react'
-
 import { readContract, writeContract } from '@wagmi/core'
 import { useWriteContract, useReadContract, useWaitForTransactionReceipt } from 'wagmi'
 import { NFTMarketPlaceABI, NFTMarketPlaceAddress } from '../Context/constants'
-import {config} from '../../config'
+import { config } from '../../config'
 import { useNFTMarketPlace } from '../Context/NFTMarketPlaceContext'
 import Navbar from '../Components/Navbar'
 import { ethers } from 'ethers'
+import ViewMyCollections from './ViewMyCollections'
 
 export default function MyNFT() {
 
   const { address } = useNFTMarketPlace()
-
-  // const { data: hash, error, isPending, writeContract } = useWriteContract();
-
-  // const { isLoading: isConfirming, isSuccess: isConfirmed } =
-  //       useWaitForTransactionReceipt({
-  //           hash,
-  //       })
 
   const [myNFTs, setMyNFTs] = useState([])
   const [resalePrice, setResalePrice] = useState()
@@ -126,7 +119,7 @@ export default function MyNFT() {
 
     try {
 
-      console.log(resalePrice)  
+      console.log(resalePrice)
 
       const price = ethers.parseUnits(resalePrice.toString(), 'ether');
 
@@ -139,14 +132,11 @@ export default function MyNFT() {
         args: [tokenId, price],
         account: address,
         value: listingPrice.toString()
-      })
-
-      console.log(result)
-
-    } catch (error) {
-
+      });
+      console.log(result);
+    } 
+    catch (error) {
       console.log("Error occured in resale nft " + error);
-
     }
 
   }
@@ -154,57 +144,62 @@ export default function MyNFT() {
   return (
     <>
       <Navbar />
-      {myNFTs?.map((item, index) => {
-        return (
-          <>
-            <div key={index} className="card col-md-3 mx-4" style={{ width: '18rem' }}>
-              <img src={item?.tokenURI} className="card-img-top" alt="..." />
-              <div className="card-body">
-                <h5 className="card-title">{item?.name}</h5>
-                <p className="card-text">{item?.description}</p>
-                {/* <p className="card-text">{item?.price} ETH</p> */}
-                <p className="card-text">{item?.owner}</p>
-                {/* Button trigger modal */}
-                <div>
-                  <button type="button" className="btn btn-dark" data-bs-toggle="modal" data-bs-target={`#modal${index}`}>
-                    Resale NFT
-                  </button>
-                  {/* Modal */}
-                  <div className="modal fade" id={`modal${index}`} tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-centered">
-                      <div className="modal-content">
-                        <div className="modal-header">
-                          <h1 className="modal-title fs-5" id="exampleModalLabel">Resale NFT</h1>
-                          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-                        </div>
-                        <div className="modal-body">
-                          <h3>NFT name: {item?.name}</h3>
-                          <div className="mb-3">
-                            <label className="form-label">Enter the Resale price below</label>
-                            <input type="text" className="form-control" placeholder="enter price in ether" onChange={(e) => setResalePrice(e.target.value)}/>
+      <div className='row m-3'>
+        {myNFTs?.map((item, index) => {
+          return (
+            <>
+              <div key={index} className="card col-md-3 mx-4" style={{ width: '18rem' }}>
+                <img src={item?.tokenURI} className="card-img-top" alt="..." />
+                <div className="card-body">
+                  <h5 className="card-title">{item?.name}</h5>
+                  <p className="card-text">{item?.description}</p>
+                  {/* <p className="card-text">{item?.price} ETH</p> */}
+                  {/* <p className="card-text">{item?.owner}</p> */}
+                  {/* Button trigger modal */}
+                  <div>
+                    <button type="button" className="btn btn-dark" data-bs-toggle="modal" data-bs-target={`#modal${index}`}>
+                      Resale NFT
+                    </button>
+                    {/* Modal */}
+                    <div className="modal fade" id={`modal${index}`} tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                          <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Resale NFT</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                           </div>
-                        </div>
-                        <div className="modal-footer">
-                          <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          <button type="button" className="btn btn-dark" onClick={() => handleResaleNFT(item?.tokenId)}>Resale</button>
+                          <div className="modal-body">
+                            <h3>NFT name: {item?.name}</h3>
+                            <div className="mb-3">
+                              <label className="form-label">Enter the Resale price below</label>
+                              <input type="text" className="form-control" placeholder="enter price in ether" onChange={(e) => setResalePrice(e.target.value)} />
+                            </div>
+                          </div>
+                          <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" className="btn btn-dark" onClick={() => handleResaleNFT(item?.tokenId)}>Resale</button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
+
                 </div>
-
-
               </div>
-            </div>
-          </>
-        )
-      })}
-      {/* {hash && <div>Transaction Hash: {hash}</div>}
+            </>
+          )
+        })}
+        {/* {hash && <div>Transaction Hash: {hash}</div>}
       {isConfirming && <div>Waiting for confirmation...</div>}
       {isConfirmed && <div>Transaction confirmed.</div>}
       {error && (
         <div>Error: {error.message}</div>
       )} */}
+      
+      </div>
+
+      <ViewMyCollections />
     </>
   )
 }
