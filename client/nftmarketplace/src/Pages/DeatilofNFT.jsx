@@ -5,6 +5,7 @@ import { NFTMarketPlaceABI, NFTMarketPlaceAddress } from '../Context/constants';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ethers } from 'ethers';
 import Navbar from '../Components/Navbar';
+import Swal from 'sweetalert2';
 
 const DeatilofNFT = () => {
 
@@ -72,6 +73,12 @@ const DeatilofNFT = () => {
                 functionName: 'createMarketSale',
                 args: [tokenId],
                 value: price
+            });
+
+            Swal.fire({
+                title: 'NFT are buyed',
+                icon: 'success',
+                confirmButtonText: 'Ok'
             });
 
             navigate('/myNFT');

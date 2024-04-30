@@ -7,6 +7,7 @@ import Navbar from '../Components/Navbar'
 import { ethers } from 'ethers'
 import { readContract, writeContract } from '@wagmi/core'
 import { useParams } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 
 function AddNFTstoCollection() {
@@ -119,7 +120,7 @@ function AddNFTstoCollection() {
 
     useEffect(() => {
         getMyNFT();
-    }, [])
+    }, []);
 
     const handleAdd = async (tokenid) => {
 
@@ -134,6 +135,12 @@ function AddNFTstoCollection() {
 
 
         console.log(data);
+
+        Swal.fire({
+            title: 'New NFTs are added in collection',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+        });
 
         getMyNFT();
     }

@@ -1,7 +1,7 @@
 import nftmarketplace from './NFTMarketPlace.json';
 import auctionContract from "./AuctionContract.json";
 
-export const NFTMarketPlaceAddress = "0x3945d74309bA9C1463e41cf370d6B0c8c98f58E8";
-export const AuctionContractAddress = "0x30681BFF0a2d6081c6380B2FE3A7b68C1dd50bc2";
+export const NFTMarketPlaceAddress = "0x5882BaA78614e154304Cc47a296d77d903193f30";
+export const AuctionContractAddress = "0x4F2Cf1C4Bc9A7d952E4637Ec8F8882E88dC06D69";
 export const NFTMarketPlaceABI = nftmarketplace.abi;
 export const AuctionContractABI = auctionContract.abi;

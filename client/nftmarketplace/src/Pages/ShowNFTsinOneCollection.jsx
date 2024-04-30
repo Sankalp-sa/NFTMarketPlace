@@ -4,7 +4,7 @@ import { readContract, writeContract } from '@wagmi/core'
 import { config } from '../../config';
 import { NFTMarketPlaceABI, NFTMarketPlaceAddress } from '../Context/constants';
 import Navbar from '../Components/Navbar';
-
+import Swal from 'sweetalert2';
 
 const ShowNFTsinOneCollection = () => {
 
@@ -23,6 +23,13 @@ const ShowNFTsinOneCollection = () => {
                 value: price
             });
             // console.log(res);
+
+            Swal.fire({
+                title: 'NFT buyed',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+
             fetchCollectionNFTs();
         } catch (error) {
             console.log(error)
