@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useNFTMarketPlace } from '../Context/NFTMarketPlaceContext';
 import { AuctionContractABI, AuctionContractAddress, NFTMarketPlaceABI, NFTMarketPlaceAddress } from '../Context/constants';
 import { ethers } from 'ethers';
-import { useReadContract, useWaitForTransactionReceipt, useTransactionReceipt } from 'wagmi'
+import { useReadContract, useWaitForTransactionReceipt, useTransactionReceipt } from 'wagmi';
 import { readContract, writeContract, watchContractEvent } from '@wagmi/core'
 import MultipleValueTextInput from 'react-multivalue-text-input';
+import Swal from 'sweetalert2'
+
 
 import Navbar from '../Components/Navbar';
 import { config } from '../../config';
@@ -28,7 +30,6 @@ export default function CreateNFT() {
     const [eventLogs, setEventLogs] = useState("");
 
     // const [marketItems, setMarketItems] = useState([]);
-
     // const { data: hash, error, isPending, writeContract } = useWriteContract();
 
     const listingData = useReadContract({
@@ -39,10 +40,6 @@ export default function CreateNFT() {
     })
 
     const listingPrice = listingData.data
-
-    useEffect(() => {
-        console.log(listingPrice)
-    }, [])
 
     useEffect(() => {
         console.log(listingPrice)
@@ -88,7 +85,7 @@ export default function CreateNFT() {
         });
         formData.append("pinataOptions", options);
 
-        createNFT(formData, choice);
+        createNFT(formData);
 
     }
 
@@ -112,7 +109,7 @@ export default function CreateNFT() {
             const cid = resData.IpfsHash;
 
             const url = `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${cid}`
-            console.log(url)
+            console.log(url);
 
             await createSale(url, nftPrice.toString(), choice)
 
