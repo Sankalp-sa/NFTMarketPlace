@@ -16,6 +16,20 @@ contract NFTMarketPlace is ERC721URIStorage {
 
     mapping(uint256 => MarketItem) public idToMarketItem;
     mapping(uint256 => string[]) public tokenTraits;
+
+    //create mapping to store the collection, with other more details like nftIds array, name, and other values
+    mapping(uint256 => Collection) public collections;
+
+    uint256 private totCollections;
+
+    //structure of collection of all NFTs
+    struct Collection {
+        string name;
+        string description;
+        address creator;
+        uint256[] nftIds;
+        uint256 collectionId;
+    }
     
 
     event MarketItemCreated(
@@ -39,13 +53,13 @@ contract NFTMarketPlace is ERC721URIStorage {
     }
 
     /* Updates the listing price of the contract */
-    function updateListingPrice(uint256 _listingPrice) public payable {
-        require(
-            owner == msg.sender,
-            "Only marketplace owner can update listing price."
-        );
-        listingPrice = _listingPrice;
-    }
+    // function updateListingPrice(uint256 _listingPrice) public payable {
+    //     require(
+    //         owner == msg.sender,
+    //         "Only marketplace owner can update listing price."
+    //     );
+    //     listingPrice = _listingPrice;
+    // }
 
     /* Returns the listing price of the contract */
     function getListingPrice() public view returns (uint256) {
@@ -220,28 +234,111 @@ contract NFTMarketPlace is ERC721URIStorage {
             }
         }
         return items;
+
     }
+
+    //parv code
+    function createCollection(string memory name, string memory description) public {
+        uint256 collectionId = totCollections + 1;
+        Collection memory newCollection = Collection(
+            name,
+            description,
+            msg.sender,
+            new uint256[](0),
+            collectionId
+        );
+        collections[collectionId] = newCollection;
+        emit CollectionCreated(collectionId, name, description, msg.sender);
+        totCollections++;
+    }
+
+    function addToCollection(uint256 collectionId, uint256 nftId) public {
+        require(collectionId <= totCollections, "Collection does not exist");
+        collections[collectionId].nftIds.push(nftId);
+        emit NFTAddedToCollection(collectionId, nftId);
+    }
+
+    function getCollection(
+        uint256 collectionId
+    ) public view returns (Collection memory) {
+        require(collectionId <= totCollections, "Collection does not exist");
+        return collections[collectionId];
+    }
+
+    function getNFTsInCollection(
+        uint256 collectionId
+    ) public view returns (uint256[] memory) {
+        require(collectionId <= totCollections, "Collection does not exist");
+        return collections[collectionId].nftIds;
+    }
+
+    function getAllCollections() public view returns (Collection[] memory) {
+        Collection[] memory allCollections = new Collection[](totCollections);
+        for (uint256 i = 1; i <= totCollections; i++) {
+            allCollections[i - 1] = collections[i];
+        }
+        return allCollections;
+    }
+
+    function getMyCollections() public view returns (Collection[] memory) {
+        uint256 total = 0;
+
+        // First, determine how many collections were created by the sender
+        for (uint256 i = 1; i <= totCollections; i++) {
+            if (collections[i].creator == msg.sender) {
+                total++;
+            }
+        }
+        // Initialize an array of collections of the determined size
+        Collection[] memory myCollections = new Collection[](total);
+        uint256 currentIndex = 0;
+
+        // Populate the array with the sender's collections
+        for (uint256 i = 1; i <= totCollections; i++) {
+            if (collections[i].creator == msg.sender) {
+                myCollections[currentIndex] = collections[i];
+                currentIndex++;
+            }
+        }
+        return myCollections;
+    }
+
+    event CollectionCreated(
+        uint256 indexed collectionId,
+        string name,
+        string description,
+        address creator
+    );
+    event NFTAddedToCollection(uint256 indexed collectionId, uint256 nftId);
 
     // get a specific NFT
-    function getNFT(uint256 tokenId) public view returns (
-        uint256 _tokenId,
-        address _owner,
-        uint256 price,
-        bool sold
-    ) {
-        MarketItem storage item = idToMarketItem[tokenId];
-        require(item.owner != address(0), "NFT with the given tokenId does not exist");
+    // function getNFT(uint256 tokenId) public view returns (
+    //     uint256 _tokenId,
+    //     address _owner,
+    //     uint256 price,
+    //     bool sold
+    // ) {
+    //     MarketItem storage item = idToMarketItem[tokenId];
+    //     require(item.owner != address(0), "NFT with the given tokenId does not exist");
 
-        return (
-            item.tokenId,
-            item.owner,
-            item.price,
-            item.sold
-        );
-    }
+    //     return (
+    //         item.tokenId,
+    //         item.owner,
+    //         item.price,
+    //         item.sold
+    //     );
+    // }
 
     function getMarketItem(uint256 tokenId) public view returns (MarketItem memory) {
         return idToMarketItem[tokenId];
+    }
+
+    function endNftAuction(uint256 tokenId, address highestBidder, uint256 highestBid) public payable  {
+
+        _transfer(payable(idToMarketItem[tokenId].owner), highestBidder, tokenId);
+
+        // idToMarketItem[tokenId].owner.transfer(bidAmount);
+        // (bool sent1,) = payable(idToMarketItem[tokenId].seller).call{value: highestBid}("");
     }
 
 }
@@ -311,25 +408,11 @@ contract AuctionContract is ERC721URIStorage {
     }
     
     function getAuction(uint256 auctionId) public view returns (
-        uint256 tokenId,
-        uint256 startTime,
-        uint256 endTime,
-        uint256 highestBid,
-        address payable highestBidder,
-        uint256 minBidIncrement,
-        bool ended
+        Auction memory
     ) {
         Auction memory auction = auctions[auctionId];
         // require(auction.endTime != 0, "Auction with the given ID does not exist");
-        return (
-            auction.tokenId,
-            auction.startTime,
-            auction.endTime,
-            auction.highestBid,
-            auction.highestBidder,
-            auction.minBidIncrement,
-            auction.ended
-        );
+        return auction;
     }
 
     function getAllRunningAuctions() public view returns (Auction[] memory) {
@@ -380,24 +463,27 @@ contract AuctionContract is ERC721URIStorage {
     }
 
 
-    function endAuction(uint256 tokenId) public {
+    function endAuction(uint256 _tokenId) public {
         // require(auctions[tokenId].endTime < block.timestamp, "Auction has not ended yet");
-        require(!auctions[tokenId].ended, "Auction has already ended");
-        require(msg.sender == nftContract.getMarketItem(tokenId).seller, "Only the seller can end the auction");
+        require(!auctions[_tokenId].ended, "Auction has already ended");
+        require(msg.sender == nftContract.getMarketItem(_tokenId).seller, "Only the seller can end the auction");
 
-        Auction storage auction = auctions[tokenId];
+        Auction storage auction = auctions[_tokenId];
         auction.ended = true;
 
         // Transfer the token to the highest bidder
-        _transfer(nftContract.getMarketItem(tokenId).owner, auction.highestBidder, tokenId);
+        nftContract.endNftAuction(_tokenId, auction.highestBidder, auction.highestBid);
 
-        // Transfer the bid amount to the seller
+        // _transfer(nftContract.getMarketItem(_tokenId).owner, auction.highestBidder, _tokenId);
+        // // Transfer the bid amount to the seller
         uint256 bidAmount = auction.highestBid;
-        // idToMarketItem[tokenId].owner.transfer(bidAmount);
-        (bool sent1,) = nftContract.getMarketItem(tokenId).owner.call{value: bidAmount}("");
+        // // idToMarketItem[tokenId].owner.transfer(bidAmount);
+        (bool sent1,) = nftContract.getMarketItem(_tokenId).seller.call{value: bidAmount}("");
+
+        // nftContract.endNftAuction(_tokenId, auction.highestBidder, auction.highestBid);
 
         // Emit the AuctionEnded event
-        emit AuctionEnded(tokenId, auction.highestBidder, bidAmount);
+        emit AuctionEnded(_tokenId, auction.highestBidder, auction.highestBid);
     }
 
 }

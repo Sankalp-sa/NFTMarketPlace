@@ -57,16 +57,39 @@ export default function CreateNFT() {
         setFileName(event.target.files[0].name);
     };
 
-    const unwatch = async () => watchContractEvent(config, {
-        address: NFTMarketPlaceAddress,
-        abi: NFTMarketPlaceABI,
-        eventName: 'MarketItemCreated',
-        onLogs(logs) {
-            console.log(logs)
-            setEventLogs(logs)
-        },
-    })
-      
+    const callAuction = async (logs) => {
+        console.log("hello")
+        const durationInSeconds = (parseInt(days) * 24 * 60 * 60) + (parseInt(hours) * 60 * 60) + (parseInt(minutes) * 60);
+
+        console.log(logs[0]?.args?.tokenId, durationInSeconds, minBidIncrement, baseBid)
+
+        const res = await writeContract(config, {
+            address: AuctionContractAddress,
+            abi: AuctionContractABI,
+            functionName: 'startAuction',
+            args: [logs[0]?.args?.tokenId, durationInSeconds, minBidIncrement, baseBid],
+        })
+        console.log("Auction Hash ", res)
+
+    }
+
+    const unwatch = async (isAuction) => {
+
+        if (isAuction) {
+            watchContractEvent(config, {
+                address: NFTMarketPlaceAddress,
+                abi: NFTMarketPlaceABI,
+                eventName: 'MarketItemCreated',
+                onLogs(logs) {
+                    callAuction(logs);
+                },
+            })
+        }
+        else{
+            console.log("Not auction")
+        }
+    }
+
     const handleSubmission = async (choice) => {
 
         const formData = new FormData();
@@ -144,25 +167,10 @@ export default function CreateNFT() {
 
             console.log("res ", res)
 
-            await unwatch()
-
-            if(choice == 'Auction'){
-                
-                // Convert days, hours, and minutes to seconds
-                const durationInSeconds = (parseInt(days) * 24 * 60 * 60) + (parseInt(hours) * 60 * 60) + (parseInt(minutes) * 60);
-                
-                console.log(eventLogs[0]?.args?.tokenId, durationInSeconds, minBidIncrement, baseBid)
-
-                const res = await writeContract(config, {
-                    address: AuctionContractAddress,
-                    abi: AuctionContractABI,
-                    functionName: 'startAuction',
-                    args: [eventLogs[0]?.args?.tokenId, durationInSeconds, minBidIncrement, baseBid],
-                })
-
-                console.log("Auction Hash ",res)
-
+            if (choice == "Auction") {
+                unwatch(true)
             }
+
 
         } catch (error) {
 
@@ -292,7 +300,7 @@ export default function CreateNFT() {
                                         onChange={(e) => setBaseBid(e.target.value)}
                                     />
                                 </div>
-                                <button type="submit" className="btn btn-dark" data-bs-dismiss="modal" aria-label="Close" onClick={ async (e) => {
+                                <button type="submit" className="btn btn-dark" data-bs-dismiss="modal" aria-label="Close" onClick={async (e) => {
                                     e.preventDefault()
                                     await handleSubmission("Auction")
                                 }}>Start Auction</button>
