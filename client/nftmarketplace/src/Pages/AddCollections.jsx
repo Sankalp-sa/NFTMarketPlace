@@ -30,7 +30,7 @@ const AddCollections = () => {
             confirmButtonText: 'Ok'
         });
 
-        navigate("/");
+        navigate("/viewCollection");
     }
 
     return (
