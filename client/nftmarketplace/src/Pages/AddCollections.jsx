@@ -4,6 +4,7 @@ import { readContract, writeContract, watchContractEvent } from '@wagmi/core'
 import { config } from '../../config';
 import { NFTMarketPlaceABI, NFTMarketPlaceAddress } from '../Context/constants';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const AddCollections = () => {
 
@@ -14,7 +15,7 @@ const AddCollections = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const res = await writeContract(config, {
             address: NFTMarketPlaceAddress,
             abi: NFTMarketPlaceABI,
@@ -23,6 +24,11 @@ const AddCollections = () => {
         });
 
         // console.log(res);
+        Swal.fire({
+            title: 'New collection added',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+        });
 
         navigate("/");
     }

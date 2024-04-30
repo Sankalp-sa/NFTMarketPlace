@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
-
 import { NFTMarketPlaceABI, NFTMarketPlaceAddress } from '../Context/constants'
 import { useWriteContract, useReadContract, useWaitForTransactionReceipt } from 'wagmi'
 import { readContract } from '@wagmi/core'
-
 import { ethers } from 'ethers'
-import {config} from '../../config'
-
+import { config } from '../../config'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 export default function ViewNFT() {
 
@@ -18,6 +16,8 @@ export default function ViewNFT() {
     functionName: 'fetchMarketItems',
     args: [],
   })
+
+  const nagivate = useNavigate();
 
   const { data: hash, writeContract, error } = useWriteContract();
 
@@ -31,9 +31,7 @@ export default function ViewNFT() {
   const handleBuyNFT = (tokenId, price) => {
 
     try {
-
       const priceInEthers = ethers.parseUnits(price.toString(), "ether")
-
       writeContract({
         address: NFTMarketPlaceAddress,
         abi: NFTMarketPlaceABI,
@@ -41,20 +39,15 @@ export default function ViewNFT() {
         args: [tokenId],
         value: priceInEthers
       })
-
-    } catch (error) {
-
+    } 
+    catch (error) {
       console.log(error)
     }
-
   }
 
   useEffect(() => {
-
     if (!isPending && data) {
-
-      console.log(data)
-
+      console.log(data);
       const fetchTokenURIs = async () => {
         const updatedItems = await Promise.all(data.map(async (item) => {
 
@@ -98,7 +91,6 @@ export default function ViewNFT() {
 
           // console.log(nftData?.metadata?.keyvalues?.nftName, nftData?.metadata?.keyvalues?.description)
 
-
           return {
             ...item,
             tokenURI,
@@ -132,7 +124,7 @@ export default function ViewNFT() {
             <div className="row">
               {nftItems?.map((item, index) => {
                 return (
-                  <div className='card col-md-3 mx-4' key={index}>
+                  <div className='card col-md-3 m-4' key={index}>
                     <div className="" style={{ width: '18rem' }}>
                       <img src={item.tokenURI} className="card-img-top" alt="..." />
                       <div className="card-body">
@@ -144,6 +136,10 @@ export default function ViewNFT() {
                         {/* Button trigger modal */}
                         <button type="button" className="btn btn-dark" onClick={() => handleBuyNFT(item?.tokenId, item?.price)}>
                           Buy NFT
+                        </button>
+                        <button type="button" className="btn btn-dark mx-3"
+                          onClick={() => { nagivate(`/detailofNFT/${item?.tokenId}`) }}>
+                            View More
                         </button>
                       </div>
                     </div>

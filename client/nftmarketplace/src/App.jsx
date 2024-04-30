@@ -12,6 +12,7 @@ import AddNFTstoCollection from './Pages/AddNFTstoCollection';
 import ViewCollection from './Pages/ViewCollection';
 import ViewMyCollections from './Pages/ViewMyCollections';
 import ShowNFTsinOneCollection from './Pages/ShowNFTsinOneCollection';
+import DeatilofNFT from './Pages/DeatilofNFT';
 // import MyNFT from './Pages/MyNFT';
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <Route path='/viewCollection' element={<ViewCollection />} />
       <Route path='/viewMyCollection' element={<ViewMyCollections />} />
       <Route path='/showNFTsinOneCollection/:collectionId' element={<ShowNFTsinOneCollection /> } />
+      <Route path='/detailofNFT/:nftId' element={<DeatilofNFT /> } />
     </Routes>
   )
 }
