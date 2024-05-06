@@ -77,7 +77,7 @@ export default function ViewAuctions() {
             <Navbar />
             <h1>View Auction</h1>
             <div className="container mt-5">
-                <h2>Currently Running Auctions</h2>
+                <h2>Currently Running and some past Auctions</h2>
                 <div className="row">
                     {auctions.map(auction => (
                         <div className="col-md-4 mb-4" key={auction.nft.tokenId}>

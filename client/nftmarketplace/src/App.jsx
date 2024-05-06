@@ -28,7 +28,7 @@ function App() {
       <Route path='/viewMyCollection' element={<ViewMyCollections />} />
       <Route path='/showNFTsinOneCollection/:collectionId' element={<ShowNFTsinOneCollection /> } />
       <Route path='/detailofNFT/:nftId' element={<DeatilofNFT /> } />
-      <Route path="/viewAuctions" element={<ViewAuctions />} />
+      <Route path="/auctions" element={<ViewAuctions />} />
       <Route path="/viewAuction/:auctionId" element={<ViewSingleAuction />} />
     </Routes>
   )

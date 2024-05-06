@@ -46,6 +46,7 @@ contract NFTMarketPlace is ERC721URIStorage {
         address payable owner;
         uint256 price;
         bool sold;
+        bool isAuction;
     }
 
     constructor() ERC721("Metaverse Tokens", "METT") {
@@ -82,17 +83,17 @@ contract NFTMarketPlace is ERC721URIStorage {
         return newTokenId;
     }
 
-    function getTraits(uint256 tokenId) public view returns (string[] memory) {
-        string[] memory traits = tokenTraits[tokenId];
-        string[] memory traitStrings = new string[](traits.length);
+    // function getTraits(uint256 tokenId) public view returns (string[] memory) {
+    //     string[] memory traits = tokenTraits[tokenId];
+    //     string[] memory traitStrings = new string[](traits.length);
 
-        for (uint256 i = 0; i < traits.length; i++) {
-            traitStrings[i] = string(abi.encodePacked(traits[i]));
-            console.log(traitStrings[i]);
-        }
+    //     for (uint256 i = 0; i < traits.length; i++) {
+    //         traitStrings[i] = string(abi.encodePacked(traits[i]));
+    //         console.log(traitStrings[i]);
+    //     }
         
-        return traitStrings;
-    }
+    //     return traitStrings;
+    // }
 
     function createMarketItem(uint256 tokenId, uint256 price) private {
         console.log(msg.value);
@@ -111,6 +112,7 @@ contract NFTMarketPlace is ERC721URIStorage {
             payable(msg.sender),
             payable(address(this)),
             price,
+            false,
             false
         );
 
@@ -333,12 +335,20 @@ contract NFTMarketPlace is ERC721URIStorage {
         return idToMarketItem[tokenId];
     }
 
-    function endNftAuction(uint256 tokenId, address highestBidder, uint256 highestBid) public payable  {
+    function endNftAuction(uint256 _tokenId, address highestBidder, uint256 highestBid) public payable  {
 
-        _transfer(payable(idToMarketItem[tokenId].owner), highestBidder, tokenId);
+        _transfer(payable(idToMarketItem[_tokenId].owner), highestBidder, _tokenId);
 
+        idToMarketItem[_tokenId].owner = payable(highestBidder);
+        idToMarketItem[_tokenId].sold = true;
+        idToMarketItem[_tokenId].seller = payable(address(0));
+        _itemsSold++;
         // idToMarketItem[tokenId].owner.transfer(bidAmount);
         // (bool sent1,) = payable(idToMarketItem[tokenId].seller).call{value: highestBid}("");
+    }
+
+    function changeNFTtoAuction(uint256 _tokenId) public {
+        idToMarketItem[_tokenId].isAuction = true;
     }
 
 }
@@ -387,6 +397,7 @@ contract AuctionContract is ERC721URIStorage {
 
     function startAuction(uint256 _tokenId, uint256 _duration, uint256 _minBidIncrement, uint256 _baseBid) public {
         require(nftContract.getMarketItem(_tokenId).seller == msg.sender, "Only the owner can start an auction");
+        nftContract.changeNFTtoAuction(_tokenId);
         uint256 startTime = block.timestamp;
         uint256 endTime = startTime + _duration;
         // Bid[] memory bidArray;
@@ -463,7 +474,7 @@ contract AuctionContract is ERC721URIStorage {
     }
 
 
-    function endAuction(uint256 _tokenId) public {
+    function endAuction(uint256 _tokenId) public payable  {
         // require(auctions[tokenId].endTime < block.timestamp, "Auction has not ended yet");
         require(!auctions[_tokenId].ended, "Auction has already ended");
         require(msg.sender == nftContract.getMarketItem(_tokenId).seller, "Only the seller can end the auction");
@@ -471,14 +482,17 @@ contract AuctionContract is ERC721URIStorage {
         Auction storage auction = auctions[_tokenId];
         auction.ended = true;
 
+        uint256 bidAmount = auction.highestBid;
+
+        (bool sent1,) = payable(nftContract.getMarketItem(_tokenId).seller).call{value: bidAmount}("");
+        console.log(sent1);
+
         // Transfer the token to the highest bidder
-        nftContract.endNftAuction(_tokenId, auction.highestBidder, auction.highestBid);
+        nftContract.endNftAuction(_tokenId, auction.highestBidder, bidAmount);
 
         // _transfer(nftContract.getMarketItem(_tokenId).owner, auction.highestBidder, _tokenId);
         // // Transfer the bid amount to the seller
-        uint256 bidAmount = auction.highestBid;
         // // idToMarketItem[tokenId].owner.transfer(bidAmount);
-        (bool sent1,) = nftContract.getMarketItem(_tokenId).seller.call{value: bidAmount}("");
 
         // nftContract.endNftAuction(_tokenId, auction.highestBidder, auction.highestBid);
 

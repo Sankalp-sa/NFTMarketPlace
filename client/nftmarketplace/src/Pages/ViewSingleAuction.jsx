@@ -8,6 +8,7 @@ import Navbar from '../Components/Navbar'
 import { useNFTMarketPlace } from '../Context/NFTMarketPlaceContext'
 import { useBalance } from 'wagmi'
 import { ethers } from 'ethers'
+import Swal from 'sweetalert2'
 
 
 export default function ViewSingleAuction() {
@@ -71,6 +72,7 @@ export default function ViewSingleAuction() {
       description: nftData?.rows[0]?.metadata?.keyvalues?.description
     };
 
+    console.log(res)
     setAuction(res);
     setLoading(false);
   }
@@ -103,7 +105,15 @@ export default function ViewSingleAuction() {
 
     console.log("BidPlace ", res)
 
+    Swal.fire({
+      title: 'Bid Placed',
+      icon: 'success',
+      confirmButtonText: 'Ok'
+    }).then(() => {
+
     fetchAuction(auctionId)
+
+    });
 
   }
 
@@ -115,17 +125,36 @@ export default function ViewSingleAuction() {
 
     console.log(auction.tokenId)
 
-    const res = await writeContract(config, {
-      abi: AuctionContractABI,
-      address: AuctionContractAddress,
-      functionName: 'endAuction',
-      args: [auction.tokenId],
-      account: address
+    Swal.fire({
+      title: 'Are you sure you want to end the auction?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No'
+    }).then(async (result) => {
+
+      if(result.isDismissed) return;
+
+      const res = await writeContract(config, {
+        abi: AuctionContractABI,
+        address: AuctionContractAddress,
+        functionName: 'endAuction',
+        args: [auction.tokenId],
+        account: address
+      });
+  
+      console.log(res)
+  
+      Swal.fire({
+        title: 'Auction Ended',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      });
+
+
+      fetchAuction(auctionId)
+
     });
-
-    console.log(res)
-
-    fetchAuction(auctionId)
 
   }
 
@@ -153,8 +182,12 @@ export default function ViewSingleAuction() {
                     <p className="card-text">Base Bid: {Number(auction?.baseBid)}</p>
                     <p className="card-text">Highest Bidder: {auction?.highestBidder === "0x0000000000000000000000000000000000000000" ? "No Bids yet" : auction?.highestBidder}</p>
                     <p className="card-text">Ended: {auction?.ended ? 'Yes' : 'No'}</p>
-                    {address == auction.seller ? <button className="btn btn-danger" onClick={handleEndAuction}>End Auction</button> :
-                      !auction.ended ? <button className='btn btn-dark' data-bs-toggle="modal" data-bs-target="#bidModal">Place bid</button> : <p className='text-info'>Auction Ended</p>}
+
+                    {auction?.ended === true ? <p className='text-info'>Auction Ended</p> :
+                      address === auction.seller ? <button className="btn btn-danger" onClick={handleEndAuction}>End Auction</button> :
+                        <button className='btn btn-dark' data-bs-toggle="modal" data-bs-target="#bidModal">Place bid</button>
+                    }
+
                   </div>
                 </div>
                 <div className="card">
@@ -205,7 +238,7 @@ export default function ViewSingleAuction() {
                   </div>
                   <div className="modal-footer">
                     <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" className="btn btn-dark" onClick={handlePlaceBid}>Submit Bid</button>
+                    <button type="button" className="btn btn-dark" onClick={handlePlaceBid} data-bs-dismiss="modal">Submit Bid</button>
                   </div>
                 </div>
               </div>

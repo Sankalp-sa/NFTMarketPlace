@@ -7,9 +7,9 @@ import { readContract, writeContract, watchContractEvent } from '@wagmi/core'
 import MultipleValueTextInput from 'react-multivalue-text-input';
 import Swal from 'sweetalert2'
 
-
 import Navbar from '../Components/Navbar';
 import { config } from '../../config';
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateNFT() {
 
@@ -28,6 +28,8 @@ export default function CreateNFT() {
     const [baseBid, setBaseBid] = useState('');
 
     const [eventLogs, setEventLogs] = useState("");
+
+    const navigate = useNavigate();
 
     // const [marketItems, setMarketItems] = useState([]);
     // const { data: hash, error, isPending, writeContract } = useWriteContract();
@@ -68,6 +70,14 @@ export default function CreateNFT() {
         })
         console.log("Auction Hash ", res)
 
+        Swal.fire({
+            title: 'Auction started',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+        });
+
+        navigate("/viewNFTs")
+
     }
 
     const unwatch = async (isAuction) => {
@@ -77,8 +87,8 @@ export default function CreateNFT() {
                 address: NFTMarketPlaceAddress,
                 abi: NFTMarketPlaceABI,
                 eventName: 'MarketItemCreated',
-                onLogs(logs) {
-                    callAuction(logs);
+                async onLogs(logs) {
+                    await callAuction(logs);
                 },
             })
         }
@@ -108,7 +118,7 @@ export default function CreateNFT() {
         });
         formData.append("pinataOptions", options);
 
-        createNFT(formData);
+        createNFT(formData, choice);
 
     }
 
@@ -163,9 +173,20 @@ export default function CreateNFT() {
             })
 
             console.log("res ", res)
+            
 
             if (choice == "Auction") {
                 unwatch(true)
+            }
+            else{
+
+                Swal.fire({
+                    title: 'New NFT created',
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                });
+
+                navigate("/viewNFTs")
             }
 
 
@@ -177,10 +198,19 @@ export default function CreateNFT() {
 
     }
 
-    const startAuction = async () => {
+    // const startAuction = async () => {
 
+    //     const durationInSeconds = (parseInt(days) * 24 * 60 * 60) + (parseInt(hours) * 60 * 60) + (parseInt(minutes) * 60);
 
-    }
+    //     const res = await writeContract(config, {
+    //         address: AuctionContractAddress,
+    //         abi: AuctionContractABI,
+    //         functionName: 'startAuction',
+    //         args: [tokenId, durationInSeconds, minBidIncrement, baseBid],
+    //     })
+
+    //     console.log("Auction Hash ", res)
+    // }
 
     return (
         <>

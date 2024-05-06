@@ -133,7 +133,9 @@ export default function ViewNFT() {
                         <p className="card-text">{item?.price} ETH</p>
                         <p className="card-text">{item?.seller}</p>
                         <p className='card-text'>Token id {item?.tokenId.toString()}</p>
-                        {/* Button trigger modal */}
+
+                        {!item?.isAuction ?
+                        <>
                         <button type="button" className="btn btn-dark" onClick={() => handleBuyNFT(item?.tokenId, item?.price)}>
                           Buy NFT
                         </button>
@@ -141,6 +143,12 @@ export default function ViewNFT() {
                           onClick={() => { nagivate(`/detailofNFT/${item?.tokenId}`) }}>
                             View More
                         </button>
+                        </>
+                        :
+                        <button type="button" className="btn btn-dark" onClick={() => { nagivate(`/viewAuction/${item?.tokenId}`) }}>
+                          View Auction
+                        </button>
+                        }
                       </div>
                     </div>
                   </div>

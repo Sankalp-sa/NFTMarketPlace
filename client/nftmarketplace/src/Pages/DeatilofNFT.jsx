@@ -10,6 +10,7 @@ const DeatilofNFT = () => {
 
     const { nftId } = useParams();
     const [nft, setnft] = useState();
+    const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
 
@@ -57,6 +58,7 @@ const DeatilofNFT = () => {
 
         // console.log(nftMarketData);
         setnft(nftMarketData);
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -82,13 +84,10 @@ const DeatilofNFT = () => {
     }
 
 
-    if (!nft) {
-        return <div className="container mt-5">Loading...</div>;
-    }
-
     return (
         <>
-            <Navbar />
+        <Navbar />
+        { loading ? <h1>Loading...</h1> :
             <div className="container mt-5">
                 <div className="row">
                     <div className="col-md-6">
@@ -105,6 +104,7 @@ const DeatilofNFT = () => {
                     </div>
                 </div>
             </div>
+        }
         </>
     )
 }
